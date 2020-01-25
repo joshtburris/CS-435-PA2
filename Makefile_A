@@ -1,0 +1,28 @@
+CURRENT_DIRECTORY=~/cs435_workspace/PA2_A/src
+#TESTFILE=/PA2/SampleInputForPA2
+TESTFILE=/PA2/PA2Dataset
+RESULT=/PA2/result_A
+LOCAL_RESULT=${CURRENT_DIRECTORY}/result_A
+HGET=${HADOOP_HOME}/bin/hadoop fs -get
+HJAR=${HADOOP_HOME}/bin/hadoop jar PA2_A.jar PA2_A
+HREMOVE=-${HADOOP_HOME}/bin/hadoop fs -rm -R
+
+all: clean build get
+
+build:
+	${HADOOP_HOME}/bin/hadoop com.sun.tools.javac.Main PA2_A.java
+	jar cf ${CURRENT_DIRECTORY}/PA2_A.jar PA2_A *.class
+	${HJAR} ${TESTFILE} ${RESULT}
+
+get:
+	${HGET} /user/joshtb/ProfileAJob1 ${CURRENT_DIRECTORY}/ProfileAJob1
+	${HGET} /user/joshtb/ProfileAJob2 ${CURRENT_DIRECTORY}/ProfileAJob2
+	${HGET} ${RESULT} ${LOCAL_RESULT}
+
+clean:
+	-rm -R ${LOCAL_RESULT}
+	-rm -R ${CURRENT_DIRECTORY}/ProfileAJob1
+	-rm -R ${CURRENT_DIRECTORY}/ProfileAJob2
+	${HREMOVE} ${RESULT}
+	${HREMOVE} /user/joshtb/ProfileAJob1
+	${HREMOVE} /user/joshtb/ProfileAJob2
